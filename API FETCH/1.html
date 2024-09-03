@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+        }
+        header, footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        section {
+            margin: 20px;
+            text-align: center;
+        }
+        h3 {
+            font-size: 2em;
+            margin: 0;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Generating Noise Background Images</h1>
+</header>
+<main>
+    <section>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search for images (e.g., nature)">
+            <button onclick="handleSearch()">Search</button>
+        </div>
+        <h3 id="image-title">Fetching a random image...</h3>
+        <p id="error-message" class="error-message"></p>
+    </section>
+</main>
+<footer>
+    <p>Background Image Fetcher - Powered by Unsplash</p>
+</footer>
+
+<script>
+    const unsplashApiUrl = 'https://api.unsplash.com/photos/random?client_id=cBnkZqXG2oiO2k25-sOFm99TsKpT7Mmuk6vpMjboCof4&count=1';
+
+    function fetchAndChangeBackground(query = '') {
+        const url = query ? https://api.unsplash.com/search/photos?query=${query}&client_id=AvroNTV4Zkt-Whc77t3ov8wtKoYTbh91ZLF2lTxfOfQ&per_page=1 : unsplashApiUrl;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                let imageUrl;
+                let title;
+
+                if (query && data.results.length > 0) {
+                    imageUrl = data.results[0].urls.full;
+                    title = data.results[0].alt_description || 'Image';
+                } else if (!query) {
+                    imageUrl = data[0].urls.full;
+                    title = data[0].alt_description || 'Random Image';
+                } else {
+                    throw new Error('No images found');
+                }
+
+                changeBackground(imageUrl, title);
+            })
+            .catch(error => {
+                document.getElementById('error-message').textContent = 'Error fetching image: ' + error.message;
+            });
+    }
+
+    function changeBackground(imageUrl, title) {
+        document.body.style.backgroundImage = url('${imageUrl}');
+        document.getElementById('image-title').textContent = title;
+        document.getElementById('error-message').textContent = '';
+    }
+
+    function startAutomaticBackgroundChange() {
+        fetchAndChangeBackground();
+        setInterval(fetchAndChangeBackground, 6000); // Changes the background every minute
+    }
+
+    function handleSearch() {
+        const query = document.getElementById('search-input').value.trim();
+        if (query) {
+            fetchAndChangeBackground(query);
+        } else {
+            document.getElementById('error-message').textContent = 'Please enter a valid search term.';
+        }
+    }
+
+    window.onload = startAutomaticBackgroundChange;
+</script>
+</body>
+</html>
